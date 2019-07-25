@@ -2,6 +2,15 @@
 
 ![FrameNet AR Teaser](https://github.com/hjwdzh/framenet/raw/master/img/teaser-ar.jpg)
 
+### Build the cpp library
+```
+cd cpp
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make
+```
+
 ### Download the data
 ```
 sh download.sh
