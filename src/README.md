@@ -21,3 +21,8 @@ sh evaluate.sh
 ```
 sh train.sh
 ```
+
+### Visualize the Tangent Field
+```
+python visualize_field.py
+```
