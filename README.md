@@ -15,6 +15,9 @@ Please refer to [**src**](https://github.com/hjwdzh/framenet/raw/master/src/) di
 ### Fun AR Application
 Please refer to [**src/demo**](https://github.com/hjwdzh/framenet/raw/master/src/demo/) directory for details.
 
+### Rendering Toolbox
+Please try the example from this [**repo**](https://github.com/hjwdzh/FrameNet).
+
 ## Author
 - [Jingwei Huang](mailto:jingweih@stanford.edu)
 
