@@ -32,13 +32,14 @@ parser.add_argument('--use_min', type=int, default='0')
 parser.add_argument('--horizontal', type=int, default='0')
 parser.add_argument('--batch_size', type=int, default='8')
 parser.add_argument('--joint', type=int, default='1')
+parser.add_argument('--lr', type=int, default=1e-3)
 parser.add_argument('--root', type=str)
 args = parser.parse_args()
 
 batch_size = args.batch_size
 train_dataset = AffineDataset(usage='train', root=args.root)
 dataloader = DataLoader(train_dataset, batch_size=batch_size,
-                        shuffle=False, num_workers=0)
+                        shuffle=True, num_workers=0)
 
 test_dataset = AffineDataset(usage='test', root=args.root)
 test_dataloader = DataLoader(test_dataset, batch_size=batch_size,
@@ -55,10 +56,10 @@ if args.save != '':
 #instance of the Conv Net
 cnn = DORN(channel=5,output_channel=13)
 if args.logtype != '':
-    writer = SummaryWriter()
+    writer = SummaryWriter(logdir='./dorn-resume')
 #loss function and optimizer
 criterion = nn.MSELoss(size_average=False)
-optimizer = torch.optim.Adam(cnn.parameters(), lr=1e-5);
+optimizer = torch.optim.Adam(cnn.parameters(), lr=1e-3);
 
 cnn = cnn.cuda()
 
@@ -148,7 +149,7 @@ def train_one_iter(i, sample_batched, evaluate=0):
     tmask = mask_alt.clone()
     X = sample_batched['X']
     Y = sample_batched['Y']
-
+    
     images_tensor = Variable(images.float())
     labels_tensor = Variable(labels)
     labels_alt_tensor = Variable(labels_alt)
@@ -165,7 +166,6 @@ def train_one_iter(i, sample_batched, evaluate=0):
         mask = mask & mask_alt_tensor
 
     mask = mask.float()
-
     X = sample_batched['X'].cuda()
     Y = sample_batched['Y'].cuda()
 
@@ -392,6 +392,7 @@ def train_one_iter(i, sample_batched, evaluate=0):
 for epoch in range(num_epochs):
     if args.train == 1:
         for i, sample_batched in enumerate(dataloader):
+            #print('start train')
             if i % 8 == 0:
                 m_iter += 1
                 try:
