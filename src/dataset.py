@@ -44,11 +44,10 @@ class AffineDataset(Dataset):
         orient_info_Y = self.root + '/' + orient_info_Y[27:]
         mask_info = self.root + '/' + mask_info[27:]
         orient_mask_tensor = misc.imresize(sio.imread(mask_info), (240,320), 'nearest')
- 
+
         # Open image
         color_img = misc.imresize(sio.imread(color_info), (240,320,3), 'nearest')
         color_tensor = self.to_tensor(color_img)
-
         input_tensor = np.zeros((5, color_img.shape[0], color_img.shape[1]), dtype='float32')
         input_tensor[0:3,:,:] = color_tensor
         input_tensor[3,:,:] = self.mesh_x
@@ -63,7 +62,9 @@ class AffineDataset(Dataset):
         l1 = np.linalg.norm(orient_x, axis=2)
         for j in range(3):
             orient_x[:,:,j] /= (l1 + 1e-9)
-        X = self.to_tensor(orient_x.copy())
+        #X = self.to_tensor(orient_x.copy())
+        X = torch.from_numpy(np.transpose(orient_x, (2,0,1)))
+        #print(np.max(orient_x), X.max(), orient_x.shape, X.shape)
         orient_x[:,:,0] = orient_x[:,:,0] - self.mesh_x * orient_x[:,:,2]
         orient_x[:,:,1] = orient_x[:,:,1] - self.mesh_y * orient_x[:,:,2]
         if self.feat == 1:
@@ -79,7 +80,9 @@ class AffineDataset(Dataset):
         l2 = np.linalg.norm(orient_y, axis=2)
         for j in range(3):
             orient_y[:,:,j] /= (l2 + 1e-9)
-        Y = self.to_tensor(orient_y.copy())
+        #Y = self.to_tensor(orient_y.copy())
+        #print(np.max(orient_y), Y.max())
+        Y = torch.from_numpy(np.transpose(orient_y, (2,0,1)))
         orient_y[:,:,0] = orient_y[:,:,0] - self.mesh_x * orient_y[:,:,2]
         orient_y[:,:,1] = orient_y[:,:,1] - self.mesh_y * orient_y[:,:,2]
 
@@ -102,9 +105,11 @@ class AffineDataset(Dataset):
         orient_img_vertical[:,:,0:2] = orient_img[:,:,2:4]
         orient_img_vertical[:,:,2:4] = -orient_img[:,:,0:2]
 
-        orient_tensor = self.to_tensor(orient_img)
-        orient_vert_tensor = self.to_tensor(orient_img_vertical)
-
+        #orient_tensor = self.to_tensor(orient_img)
+        #print(np.max(orient_img), orient_tensor.max())
+        orient_tensor = torch.from_numpy(np.transpose(orient_img, (2,0,1)))
+        #orient_vert_tensor = self.to_tensor(orient_img_vertical)
+        orient_vert_tensor = torch.from_numpy(np.transpose(orient_img_vertical,(2,0,1)))
         #orient_mask_tensor = misc.imresize(orient_mask_tensor, (240,320), 'nearest')
         orient_mask_tensor = torch.Tensor(orient_mask_tensor  / 255.0)
         #orient_mask = np.reshape(orient_mask, (orient_mask.shape[0], orient_mask.shape[1], 1))
