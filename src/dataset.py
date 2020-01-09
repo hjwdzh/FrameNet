@@ -176,15 +176,15 @@ class AffineTestsDataset(Dataset):
         l1 = np.linalg.norm(orient_x, axis=2)
         for j in range(3):
             orient_x[:,:,j] /= (l1 + 1e-9)
-        X = self.to_tensor(orient_x.copy())
-
+        #X = self.to_tensor(orient_x.copy())
+        X = torch.from_numpy(np.transpose(orient_x,(2,0,1)))
         orient_y = misc.imresize(sio.imread(orient_info_Y), (240,320,3), 'nearest')
         orient_y = (orient_y / 255.0 * 2.0 - 1.0).astype('float32')
         l2 = np.linalg.norm(orient_y, axis=2)
         for j in range(3):
             orient_y[:,:,j] /= (l2 + 1e-9)
-        Y = self.to_tensor(orient_y.copy())
-        
+        #Y = self.to_tensor(orient_y.copy())
+        Y = torch.from_numpy(np.transpose(orient_y,(2,0,1)))
 
         orient_x[:,:,0] = orient_x[:,:,0] - self.mesh_x * orient_x[:,:,2]
         orient_x[:,:,1] = orient_x[:,:,1] - self.mesh_y * orient_x[:,:,2]
@@ -218,9 +218,10 @@ class AffineTestsDataset(Dataset):
         orient_img_vertical[:,:,0:2] = orient_img[:,:,2:4]
         orient_img_vertical[:,:,2:4] = -orient_img[:,:,0:2]
 
-        orient_tensor = self.to_tensor(orient_img)
-        orient_vert_tensor = self.to_tensor(orient_img_vertical)
-
+        #orient_tensor = self.to_tensor(orient_img)
+        #orient_vert_tensor = self.to_tensor(orient_img_vertical)
+        orient_tensor = torch.from_numpy(np.transpose(orient_img,(2,0,1)))
+        orient_vert_tensor = torch.from_numpy(np.transpose(orient_img_vertical,(2,0,1)))
         #orient_mask_tensor = misc.imresize(orient_mask_tensor, (240,320), 'nearest')
         orient_mask_tensor = torch.Tensor(orient_mask_tensor  / 255.0)
         #orient_mask = np.reshape(orient_mask, (orient_mask.shape[0], orient_mask.shape[1], 1))
